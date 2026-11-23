@@ -1,0 +1,11 @@
+# The GitHub repo to connect this project to
+repository: {
+  owner: Greenloop36,
+  name: fb-mod-sync
+}
+
+# Information about this project
+project_information: {
+  name: GDST Server Mods Synchroniser,
+  app_id: com.gl36.gdst-mod-sync,
+}
