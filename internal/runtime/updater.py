@@ -22,6 +22,7 @@ import zipfile
 import tempfile
 import shutil
 import io
+import yaml
 
 ## Types
 type Result = tuple[bool, str | None]
@@ -76,11 +77,16 @@ class UpdaterInterface:
         self._text_status = text
     
     def set_progress(self, current: float | int = None, max: float| int = None):
-        if current != None:
-            self._progress_current = current
-        
-        if max != None:
-            self._progress_max = max
+        if current == -1:
+            self.progress_bar.start(10)
+        else:
+            self.progress_bar.stop()
+
+            if current != None:
+                self._progress_current = current
+            
+            if max != None:
+                self._progress_max = max
     
     def poll(self):
         self.label_status.config(text=self._text_status)
@@ -103,8 +109,10 @@ class UpdaterInterface:
     #     self._loop.join()
     
     def destroy(self):
-        if self._running:
+        try:
             self.root.destroy()
+        except Exception: pass
+            
 
 class Updater:
     def __init__(self,
@@ -145,7 +153,7 @@ class Updater:
 
     def _update(self) -> Result:
         # Set UI
-        self.interface.set_progress(0, 3)
+        self.interface.set_progress(-1)
 
         # Download new archive
         self.interface.set_status("downloading archive")
@@ -156,7 +164,7 @@ class Updater:
             self._update_result = (False, format_error(e, "Download failed!"))
             return
         
-        self.interface.set_progress(1)
+        self.interface.set_progress(1, 3)
         
         # Install the downloaded archive in a temporary file
         # try:
@@ -215,6 +223,8 @@ class Updater:
         archive_dump.cleanup()
         self._update_result = (True, None)
 
+        self.interface.destroy()
+
         return True, None
     
     def get_repository_file_content(self, path: str) -> Result:
@@ -238,7 +248,33 @@ class Updater:
 
             if result == current_version:
                 # 
-                return False, None
+                return False, result
             else:
                 # An update is available
-                return True, result            
+                return True, result
+
+    def update_binary(self, binary_name: str, version: str, binary_path: str) -> Result:
+        try:
+            retrieve_binary = requests.get(
+                f'https://github.com/{self.author}/{self.repository}/releases/download/{version}/{binary_name}'
+            )
+
+            retrieve_binary.raise_for_status()
+        except requests.HTTPError as e:
+            if retrieve_binary.status_code == 404:
+                return False, "Could not find the specified binary."
+
+            return False, f"HTTP {retrieve_binary.status_code} ({retrieve_binary.reason})"
+        except Exception as e:
+            return False, "Unknown error"
+
+        print(retrieve_binary.raw.__class__.__name__)
+
+        try:
+            with open(binary_path, "wb") as file:
+                # file.write(retrieve_binary.raw)
+                print(retrieve_binary.raw)
+        except Exception as e:
+            return False, "Failed to write to file."
+
+        return True

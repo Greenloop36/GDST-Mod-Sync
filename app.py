@@ -17,6 +17,7 @@ from internal.runtime import updater
 import os
 import requests
 import webbrowser
+import yaml
 
 from tkinter import filedialog
 
@@ -301,33 +302,63 @@ class App:
         update_available, new_version = self.updater.is_update_available(self.project_version)
 
         if not update_available:
-            choice: str = dialogs.Messagebox.yesno("You are already running the latest version.\nUpdate anyway?", "Software Update", alert=True)
+            choice: str = dialogs.Messagebox.yesno("You are already running the latest version.\nRedownload this current version?", "Software Update", alert=True)
 
             if choice == "No":
                 return
         
         # Updater does not support updating as .exe
-        if file_system.is_running_as_exe():
-            choice: str = dialogs.Messagebox.yesno("Cannot update as an .exe file.\nOpen the releases page to download manually?", "Software Update", alert=True)
+        # if file_system.is_running_as_exe():
+        #     # choice: str = dialogs.Messagebox.yesno("Cannot update as an .exe file.\nOpen the releases page to download manually?", "Software Update", alert=True)
 
-            if choice == "Yes":
-                url: str = f"https://github.com/{self.project["repository"]["owner"]}/{self.project["repository"]["name"]}/releases/latest"
-                # print(url)
-                webbrowser.open(url)
 
-            return
+
+        #     if choice == "Yes":
+        #         url: str = f"https://github.com/{self.project["repository"]["owner"]}/{self.project["repository"]["name"]}/releases/latest"
+        #         # print(url)
+        #         webbrowser.open(url)
+
+        #     return
 
         
         choice: str = dialogs.Messagebox.okcancel("Perform a software update?", "Software Update")
 
         if choice == "OK":
-            success, result = self.updater.update()
+            if file_system.is_running_as_exe():
+                ## Update .exe file
+                s, newest_project_file = self.updater.get_repository_file_content("internal/data/project.yaml")
 
-            if success:
-                dialogs.Messagebox.show_info("Update successful. The software will now exit.", "Software Update")
-                self.quit()
+                if not s:
+                    return dialogs.Messagebox.show_error("Failed to retrieve the latest information. Please try again.", "Error")
+
+                newest_project_file: dict = yaml.safe_load(newest_project_file)
+
+                loading_ui = updater.UpdaterInterface("Software Update", "performing software update...")
+                loading_ui.set_progress(-1)
+
+                update_success, update_result = self.updater.update_binary(
+                    newest_project_file['repository']['update']['target_binary_name'],
+                    new_version,
+                    __file__
+                )
+
+                loading_ui.destroy()
+
+                if update_success:
+                    dialogs.Messagebox.show_info("Update complete. Please restart the software.", "Software Update")
+                    sys.exit()
+                    return
+                else:
+                    dialogs.Messagebox.show_error(f"Update failed: {update_result}\n\nPlease try again, or download the update manually if this issue persists.", "Software Update")
             else:
-                return dialogs.Messagebox.show_warning(f"Update failed. Try again later.\n\n{result}", "Software Update")
+                ## Update this build
+                success, result = self.updater.update()
+
+                if success:
+                    dialogs.Messagebox.show_info("Update successful. The software will now exit.", "Software Update")
+                    self.quit()
+                else:
+                    return dialogs.Messagebox.show_warning(f"Update failed. Try again later.\n\n{result}", "Software Update")
     
     def information(self):
         dialogs.Messagebox.show_info(

@@ -1,7 +1,11 @@
 # The GitHub repo to connect this project to
 repository: {
   owner: Greenloop36,
-  name: GDST-Mod-Sync
+  name: GDST-Mod-Sync,
+
+  update: {
+    target_binary_name: GDST-Mod-Sync.exe
+  }
 }
 
 # Information about this project
