@@ -279,4 +279,4 @@ class Updater:
         except Exception as e:
             return False, "Failed to write to file."
 
-        return True
+        return True, None
