@@ -274,8 +274,8 @@ class Updater:
 
         try:
             with open(binary_path, "wb") as file:
-                # file.write(retrieve_binary.raw)
-                print(retrieve_binary.raw)
+                file.write(retrieve_binary.content)
+                # print(retrieve_binary.raw)
         except Exception as e:
             return False, "Failed to write to file."
 
