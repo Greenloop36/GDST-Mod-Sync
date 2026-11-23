@@ -250,16 +250,20 @@ class App:
             server_files.append(file_name)
 
         # Parse local files
+        # print(directory)
         for name in os.listdir(directory):
+            # print("a", name)
             if name.startswith("."): continue
-            if not os.path.isfile(name): continue
+            # if not os.path.isfile(name): continue
             
             local_files.append(name)
+            
 
         # Find problems
         for name in server_files:
             if name not in local_files:
                 problems.append(f'Missing file "{name}"!')
+                # print("bad",name)
                 continue
 
             # if local_files[name] != hash:
