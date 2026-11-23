@@ -204,7 +204,7 @@ class App:
             dialogs.Messagebox.show_error("Cannot sync: invalid destination directory", "Error", alert=True)
             return
 
-        synchro = updater.Updater("Greenloop36", "fb-server_mods", destination, "Mods", "synchronising mods...", self.ui.root)
+        synchro = updater.Updater("Greenloop36", self.config['sync_location'], destination, "Mods", "synchronising mods...", self.ui.root)
         success, result = synchro.update()
 
         if success:
@@ -240,6 +240,8 @@ class App:
                 f"Refresh failed!\n{type(e).__name__}: {e}",
                 "Error"
             )
+
+        # print(f"https://api.github.com/repos/{self.config["sync_location"]}/contents/")
         
         # Parse response
         for data in response.json():
