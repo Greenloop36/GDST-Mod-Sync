@@ -125,7 +125,7 @@ class App:
         # self.ui.create_menubutton("File", "Perform software update", self.software_update)
 
         ## Header
-        self.app_header = UiHeader(self.ui.root, self.project["project_information"]["name"], 15, "Automatically sync active mods on the Frenchy Boi Minecraft server")
+        self.app_header = UiHeader(self.ui.root, self.project["project_information"]["name"], 15, "Automatically sync active mods on the Purple Concrete Powder Craft Minecraft server")
 
         ## Content
         self.app_content = ttk.Frame(self.ui.root)

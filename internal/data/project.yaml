@@ -6,6 +6,6 @@ repository: {
 
 # Information about this project
 project_information: {
-  name: GDST Server Mods Synchroniser,
+  name: PCP-Craft Server Mods Synchroniser,
   app_id: com.gl36.gdst-mod-sync,
 }
