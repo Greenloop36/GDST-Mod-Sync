@@ -270,7 +270,7 @@ class Updater:
         except Exception as e:
             return False, "Unknown error"
 
-        print(retrieve_binary.raw.__class__.__name__)
+        print(retrieve_binary.content.__class__.__name__)
 
         try:
             with open(binary_path, "wb") as file:

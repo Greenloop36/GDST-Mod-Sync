@@ -364,6 +364,8 @@ class App:
                         __file__
                     )
 
+                    print(__file__)
+
                 update_thread = threading.Thread(target=run)
                 update_thread.start()
 
