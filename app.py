@@ -350,10 +350,10 @@ class App:
 
                 newest_project_file: dict = yaml.safe_load(newest_project_file)
 
-                loading_ui = updater.UpdaterInterface("Software Update", "performing software update...")
+                loading_ui = updater.UpdaterInterface("Software Update", "performing software update...", self.ui.root)
                 loading_ui.set_progress(-1)
 
-                update_success, update_result = None
+                update_success = update_result = None
 
                 def run():
                     nonlocal update_success, update_result

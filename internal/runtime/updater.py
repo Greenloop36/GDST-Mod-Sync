@@ -78,9 +78,11 @@ class UpdaterInterface:
     
     def set_progress(self, current: float | int = None, max: float| int = None):
         if current == -1:
+            self.progress_bar.configure(mode="indeterminate")
             self.progress_bar.start(10)
         else:
             self.progress_bar.stop()
+            self.progress_bar.configure(mode="determinate")
 
             if current != None:
                 self._progress_current = current
