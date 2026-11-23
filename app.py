@@ -361,10 +361,10 @@ class App:
                     update_success, update_result = self.updater.update_binary(
                         newest_project_file['repository']['update']['target_binary_name'],
                         new_version,
-                        __file__
+                        os.path.dirname(sys.executable)
                     )
 
-                    print(__file__)
+                    print(os.path.dirname(sys.executable))
 
                 update_thread = threading.Thread(target=run)
                 update_thread.start()
