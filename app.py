@@ -13,6 +13,7 @@ sys.dont_write_bytecode = True
 
 from internal.lib import file_system, project_types
 from internal.runtime import updater
+from internal.runtime import ui
 
 import os
 import requests
@@ -121,6 +122,14 @@ class App:
 
         self.menubar.add_cascade(label="File", menu=self.menu_file)
 
+        ## File
+        self.menu_view = ttk.Menu(self.menubar)
+        self.console_reveal = ttk.BooleanVar()
+        self.console_reveal.set(False)
+        self.menu_view.add_checkbutton(label="Reveal Console", command=self.reveal_console, onvalue=1, offvalue=0, variable=self.console_reveal)
+
+        self.menubar.add_cascade(label="View", menu=self.menu_view)
+
 
         # self.ui.create_menu("File")
         # self.ui.create_menubutton("File", "Perform software update", self.software_update)
@@ -188,6 +197,13 @@ class App:
             )
 
         return update_available
+
+    def reveal_console(self):
+        reveal: bool = self.console_reveal.get()
+        
+        self.console_reveal.set(reveal)
+        ui.raise_console(reveal)
+
 
     def update_config(self):
         # Update saved dest dir

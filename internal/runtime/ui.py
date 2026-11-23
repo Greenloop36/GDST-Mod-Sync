@@ -8,7 +8,7 @@
 """
 
 # Imports
-from tkinter import messagebox, filedialog
+# from tkinter import messagebox, filedialog
 
 import ttkbootstrap as ttk
 import ttkbootstrap.dialogs as dialogs
@@ -54,6 +54,22 @@ class App:
     
     def create_menubutton(self, menu_name: str, button_name: str, command):
         self.menus[menu_name].add_command(label=button_name, command=command)
+
+# Source - https://stackoverflow.com/a/58527868
+# Posted by tgikal
+# Retrieved 2026-11-23, License - CC BY-SA 4.0
+
+import ctypes
+
+def raise_console(console_toggle):
+    """Brings up the Console Window."""
+    if console_toggle:
+        # Show console
+        ctypes.windll.user32.ShowWindow(ctypes.windll.kernel32.GetConsoleWindow(), 4)
+    else:
+        # Hide console
+        ctypes.windll.user32.ShowWindow(ctypes.windll.kernel32.GetConsoleWindow(), 0)
+
 
 if __name__ == "__main__":
     App("Test app").root.mainloop()
