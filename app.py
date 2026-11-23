@@ -19,6 +19,7 @@ import os
 import requests
 import webbrowser
 import yaml
+import threading
 
 from tkinter import filedialog
 
@@ -200,7 +201,7 @@ class App:
 
     def reveal_console(self):
         reveal: bool = self.console_reveal.get()
-        
+
         self.console_reveal.set(reveal)
         ui.raise_console(reveal)
 
@@ -352,11 +353,25 @@ class App:
                 loading_ui = updater.UpdaterInterface("Software Update", "performing software update...")
                 loading_ui.set_progress(-1)
 
-                update_success, update_result = self.updater.update_binary(
-                    newest_project_file['repository']['update']['target_binary_name'],
-                    new_version,
-                    __file__
-                )
+                update_success, update_result = None
+
+                def run():
+                    nonlocal update_success, update_result
+
+                    update_success, update_result = self.updater.update_binary(
+                        newest_project_file['repository']['update']['target_binary_name'],
+                        new_version,
+                        __file__
+                    )
+
+                update_thread = threading.Thread(target=run)
+                update_thread.start()
+
+                while update_thread.is_alive():
+                    loading_ui.poll()
+
+                try: update_thread.join()
+                except: pass
 
                 loading_ui.destroy()
 
@@ -365,7 +380,7 @@ class App:
                     sys.exit()
                     return
                 else:
-                    dialogs.Messagebox.show_error(f"Update failed: {update_result}\n\nPlease try again, or download the update manually if this issue persists.", "Software Update")
+                    return dialogs.Messagebox.show_error(f"Update failed: {update_result}\n\nPlease try again, or download the update manually if this issue persists.", "Software Update")
             else:
                 ## Update this build
                 success, result = self.updater.update()
