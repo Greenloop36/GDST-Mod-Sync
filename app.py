@@ -204,7 +204,10 @@ class App:
             dialogs.Messagebox.show_error("Cannot sync: invalid destination directory", "Error", alert=True)
             return
 
-        synchro = updater.Updater("Greenloop36", self.config['sync_location'], destination, "Mods", "synchronising mods...", self.ui.root)
+        repository_name: str = self.config['sync_location']
+        repository_name = repository_name.split("/")[1]
+
+        synchro = updater.Updater("Greenloop36", repository_name, destination, "Mods", "synchronising mods...", self.ui.root)
         success, result = synchro.update()
 
         if success:
